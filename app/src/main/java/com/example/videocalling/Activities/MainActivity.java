@@ -8,6 +8,9 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.videocalling.Adapters.UsersAdapter;
+import com.example.videocalling.Listeners.UserListener;
+import com.example.videocalling.Models.User;
 import com.example.videocalling.Utilities.Constants;
 import com.example.videocalling.Utilities.PreferenceManager;
 import com.example.videocalling.databinding.ActivityMainBinding;
@@ -18,16 +21,21 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.installations.FirebaseInstallations;
 import com.google.firebase.installations.InstallationTokenResult;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements UserListener {
 
     ActivityMainBinding binding;
     private PreferenceManager preferenceManager;
+    private List<User> users;
+    private UsersAdapter usersAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,7 +68,51 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        users = new ArrayList<>();
+        usersAdapter = new UsersAdapter(users, this);
+        binding.usersRecyclerView.setAdapter(usersAdapter);
 
+        binding.swipeRefreshLayout.setOnRefreshListener(this::getUsers);
+        getUsers();
+
+
+    }
+
+    private void getUsers() {
+        binding.swipeRefreshLayout.setRefreshing(true);
+
+        FirebaseFirestore database = FirebaseFirestore.getInstance();
+        database.collection(Constants.KEY_COLLECTION_USERS)
+                .get()
+                .addOnCompleteListener(task -> {
+                    binding.swipeRefreshLayout.setRefreshing(false);
+
+                    String myUserId = preferenceManager.getString(Constants.KEY_USER_ID);
+                    if (task.isSuccessful() && task.getResult() != null) {
+                        users.clear();
+                        for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
+                            if (myUserId.equals(documentSnapshot.getId())) {
+                                continue;
+                            }
+                            User user = new User();
+                            user.firstName = documentSnapshot.getString(Constants.KEY_FIRST_NAME);
+                            user.lastName = documentSnapshot.getString(Constants.KEY_LAST_NAME);
+                            user.email = documentSnapshot.getString(Constants.KEY_EMAIL);
+                            user.token = documentSnapshot.getString(Constants.KEY_FCM_TOKEN);
+                            users.add(user);
+
+                        }
+                        if (users.size() > 0) {
+                            usersAdapter.notifyDataSetChanged();
+                        } else {
+                            binding.textErrorMessage.setText(String.format("%s", "No Users Available"));
+                            binding.textErrorMessage.setVisibility(View.VISIBLE);
+                        }
+                    } else {
+                        binding.textErrorMessage.setText(String.format("%s", "No Users Available"));
+                        binding.textErrorMessage.setVisibility(View.VISIBLE);
+                    }
+                });
     }
 
     private void sendFCMTokenDatabase(String token) {
@@ -71,13 +123,7 @@ public class MainActivity extends AppCompatActivity {
                 );
 
         documentReference.update(Constants.KEY_FCM_TOKEN, token)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
 
-                        Toast.makeText(MainActivity.this, "Token updated successfully", Toast.LENGTH_SHORT).show();
-                    }
-                })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
@@ -113,5 +159,26 @@ public class MainActivity extends AppCompatActivity {
                 });
 
 
+    }
+
+    @Override
+    public void initiateVideoMeeting(User user) {
+        if (user.token == null || user.token.trim().isEmpty()) {
+            Toast.makeText(this, user.firstName + " " + user.lastName + "is not available for meeting.", Toast.LENGTH_SHORT).show();
+        } else {
+            Intent intent = new Intent(getApplicationContext(), OutgoingMeetingInvitation.class);
+            intent.putExtra("user", user);
+            intent.putExtra("type", "video");
+            startActivity(intent);
+        }
+    }
+
+    @Override
+    public void initiateAudioMeeting(User user) {
+        if (user.token == null || user.token.trim().isEmpty()) {
+            Toast.makeText(this, user.firstName + " " + user.lastName + "is not available for meeting.", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(this, "Audio meeting with " + user.firstName + " " + user.lastName, Toast.LENGTH_SHORT).show();
+        }
     }
 }
