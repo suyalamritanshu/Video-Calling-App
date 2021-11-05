@@ -18,7 +18,6 @@
         app:layout_constraintTop_toTopOf="parent"
         app:tint="@color/colorTextIcons" />
 
-
     <TextView
         android:id="@+id/textIncomingMeetingInvitation"
         android:layout_width="match_parent"
@@ -27,10 +26,10 @@
         android:fontFamily="@font/medium"
         android:gravity="center"
         android:includeFontPadding="false"
-        android:text="Incoming Meeting Invitation"
+        android:text="@string/activity_incoming_invitation_text_incoming_meeting_invitation"
         android:textColor="@color/colorTextIcons"
-        android:textSize="@dimen/_15sdp"
-        app:layout_constraintTop_toBottomOf="@+id/imageMeetingType" />
+        android:textSize="@dimen/_15ssp"
+        app:layout_constraintTop_toBottomOf="@id/imageMeetingType" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -44,13 +43,13 @@
             android:id="@+id/textFirstChar"
             android:layout_width="@dimen/_60sdp"
             android:layout_height="@dimen/_60sdp"
-            android:layout_gravity="center"
             android:background="@drawable/background_meeting_invitation_user_icon"
             android:fontFamily="@font/bold"
+            android:gravity="center"
             android:includeFontPadding="false"
             android:textAllCaps="true"
             android:textColor="@color/colorPrimaryText"
-            android:textSize="@dimen/_30sdp" />
+            android:textSize="@dimen/_30ssp" />
 
         <TextView
             android:id="@+id/textUsername"
@@ -61,7 +60,7 @@
             android:gravity="center"
             android:includeFontPadding="false"
             android:textColor="@color/colorTextIcons"
-            android:textSize="@dimen/_18sdp" />
+            android:textSize="@dimen/_18ssp" />
 
         <TextView
             android:id="@+id/textEmail"
@@ -73,7 +72,6 @@
             android:includeFontPadding="false"
             android:textColor="@color/colorTextIcons"
             android:textSize="@dimen/_11ssp" />
-
     </LinearLayout>
 
     <ImageView
@@ -103,6 +101,4 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:tint="@color/colorTextIcons" />
-
-
 </androidx.constraintlayout.widget.ConstraintLayout>

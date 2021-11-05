@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/userContainer"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:animateLayoutChanges="true"
     android:padding="@dimen/_5sdp">
 
     <TextView
@@ -20,12 +22,27 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <ImageView
+        android:id="@+id/imageSelected"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@drawable/background_user_icon"
+        android:contentDescription="@string/app_name"
+        android:padding="@dimen/_3sdp"
+        android:src="@drawable/ic_accept"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/textFirstChar"
+        app:layout_constraintEnd_toEndOf="@id/textFirstChar"
+        app:layout_constraintStart_toStartOf="@id/textFirstChar"
+        app:layout_constraintTop_toTopOf="@id/textFirstChar"
+        app:tint="@color/colorTextIcons" />
+
     <View
         android:id="@+id/viewSupporter"
         android:layout_width="1dp"
         android:layout_height="1dp"
+        app:layout_constraintBottom_toBottomOf="@id/textFirstChar"
         app:layout_constraintStart_toEndOf="@id/textFirstChar"
-        app:layout_constraintTop_toBottomOf="@id/textFirstChar"
         app:layout_constraintTop_toTopOf="@id/textFirstChar" />
 
     <ImageView
@@ -47,18 +64,16 @@
         android:layout_marginEnd="@dimen/_8sdp"
         android:contentDescription="@string/app_name"
         android:padding="@dimen/_4sdp"
-        android:src="@drawable/ic_call"
+        android:src="@drawable/ic_accept"
         app:layout_constraintBottom_toTopOf="@id/viewDivider"
         app:layout_constraintEnd_toStartOf="@id/imageVideoMeeting"
         app:layout_constraintTop_toTopOf="parent"
         app:tint="@color/colorPrimary" />
 
-
     <TextView
         android:id="@+id/textUsername"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/_30sdp"
         android:layout_marginStart="@dimen/_8sdp"
         android:layout_marginEnd="@dimen/_8sdp"
         android:ellipsize="end"
@@ -67,10 +82,9 @@
         android:maxLines="1"
         android:textColor="@color/colorPrimaryText"
         android:textSize="@dimen/_13ssp"
-        app:layout_constraintBottom_toTopOf="@+id/textEmail"
+        app:layout_constraintBottom_toTopOf="@id/viewSupporter"
         app:layout_constraintEnd_toStartOf="@id/imageAudioMeeting"
         app:layout_constraintStart_toEndOf="@id/textFirstChar" />
-
 
     <TextView
         android:id="@+id/textEmail"
@@ -84,12 +98,9 @@
         android:maxLines="1"
         android:textColor="@color/colorSecondaryText"
         android:textSize="@dimen/_10ssp"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/imageAudioMeeting"
-        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toEndOf="@id/textFirstChar"
-        app:layout_constraintTop_toBottomOf="@id/viewSupporter"
-        app:layout_constraintVertical_bias="0.636" />
+        app:layout_constraintTop_toBottomOf="@id/viewSupporter" />
 
     <View
         android:id="@+id/viewDivider"
@@ -100,6 +111,7 @@
         android:background="@color/colorDivider"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/textFirstChar"
-        app:layout_constraintTop_toBottomOf="@+id/textFirstChar" />
+        app:layout_constraintStart_toEndOf="@id/textFirstChar"
+        app:layout_constraintTop_toBottomOf="@id/textFirstChar" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

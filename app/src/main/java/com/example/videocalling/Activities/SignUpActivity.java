@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Patterns;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -31,84 +32,62 @@ public class SignUpActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
         preferenceManager = new PreferenceManager(getApplicationContext());
 
-        binding.textSignIn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(SignUpActivity.this, SignInActivity.class));
+        binding.imageBack.setOnClickListener(v -> onBackPressed());
+        binding.textSignIn.setOnClickListener(v -> onBackPressed());
+
+
+        binding.buttonSignUp.setOnClickListener(v -> {
+            if (getInputsContentText(binding.inputFirstName).isEmpty()) {
+                Toast.makeText(SignUpActivity.this, "Enter first name", Toast.LENGTH_SHORT).show();
+            } else if (getInputsContentText(binding.inputLastName).isEmpty()) {
+                Toast.makeText(SignUpActivity.this, "Enter last name", Toast.LENGTH_SHORT).show();
+            } else if (getInputsContentText(binding.inputEmail).isEmpty()) {
+                Toast.makeText(SignUpActivity.this, "Enter email", Toast.LENGTH_SHORT).show();
+            } else if (!Patterns.EMAIL_ADDRESS.matcher(getInputsContentText(binding.inputEmail)).matches()) {
+                Toast.makeText(SignUpActivity.this, "Enter valid email", Toast.LENGTH_SHORT).show();
+            } else if (getInputsContentText(binding.inputPassword).isEmpty()) {
+                Toast.makeText(SignUpActivity.this, "Enter password", Toast.LENGTH_SHORT).show();
+            } else if (getInputsContentText(binding.inputConfirmPassword).isEmpty()) {
+                Toast.makeText(SignUpActivity.this, "Confirm your password", Toast.LENGTH_SHORT).show();
+            } else if (!getInputsContentText(binding.inputPassword).equals(getInputsContentText(binding.inputConfirmPassword))) {
+                Toast.makeText(SignUpActivity.this, "Password & confirm password must be same", Toast.LENGTH_SHORT).show();
+            } else {
+                signUp();
             }
         });
-
-        binding.imageBack.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                onBackPressed();
-            }
-        });
-
-        binding.buttonSignUp.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (binding.inputFirstName.getText().toString().trim().isEmpty()) {
-                    Toast.makeText(SignUpActivity.this, "Enter First Name", Toast.LENGTH_SHORT).show();
-                } else if (binding.inputLastName.getText().toString().trim().isEmpty()) {
-                    Toast.makeText(SignUpActivity.this, "Enter Last Name", Toast.LENGTH_SHORT).show();
-                } else if (binding.inputEmail.getText().toString().trim().isEmpty()) {
-                    Toast.makeText(SignUpActivity.this, "Enter email", Toast.LENGTH_SHORT).show();
-                } else if (!Patterns.EMAIL_ADDRESS.matcher(binding.inputEmail.getText().toString()).matches()) {
-                    Toast.makeText(SignUpActivity.this, "Enter valid email", Toast.LENGTH_SHORT).show();
-                } else if (binding.inputPassword.getText().toString().trim().isEmpty()) {
-                    Toast.makeText(SignUpActivity.this, "Enter Password", Toast.LENGTH_SHORT).show();
-                } else if (binding.inputCnfPassword.getText().toString().trim().isEmpty()) {
-                    Toast.makeText(SignUpActivity.this, "Enter Confirm Password", Toast.LENGTH_SHORT).show();
-                } else if (!binding.inputPassword.getText().toString().equals(binding.inputCnfPassword.getText().toString())) {
-                    Toast.makeText(SignUpActivity.this, "Password and Confirm Password must be same!!", Toast.LENGTH_SHORT).show();
-                } else {
-                    signUp();
-                }
-            }
-        });
-
-
     }
 
-
     private void signUp() {
-
         binding.buttonSignUp.setVisibility(View.INVISIBLE);
         binding.signUpProgressBar.setVisibility(View.VISIBLE);
 
         FirebaseFirestore database = FirebaseFirestore.getInstance();
         HashMap<String, Object> user = new HashMap<>();
-        user.put(Constants.KEY_FIRST_NAME, binding.inputFirstName.getText().toString());
-        user.put(Constants.KEY_LAST_NAME, binding.inputLastName.getText().toString());
-        user.put(Constants.KEY_EMAIL, binding.inputEmail.getText().toString());
-        user.put(Constants.KEY_PASSWORD, binding.inputPassword.getText().toString());
+        user.put(Constants.KEY_FIRST_NAME, getInputsContentText(binding.inputFirstName));
+        user.put(Constants.KEY_LAST_NAME, getInputsContentText(binding.inputLastName));
+        user.put(Constants.KEY_EMAIL, getInputsContentText(binding.inputEmail));
+        user.put(Constants.KEY_PASSWORD, getInputsContentText(binding.inputPassword));
 
         database.collection(Constants.KEY_COLLECTION_USERS)
                 .add(user)
-                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                    @Override
-                    public void onSuccess(DocumentReference documentReference) {
-
-                        preferenceManager.putBoolean(Constants.KEY_IS_SIGNED_IN, true);
-                        preferenceManager.putString(Constants.KEY_USER_ID, documentReference.getId());
-                        preferenceManager.putString(Constants.KEY_FIRST_NAME, binding.inputFirstName.getText().toString());
-                        preferenceManager.putString(Constants.KEY_LAST_NAME, binding.inputLastName.getText().toString());
-                        preferenceManager.putString(Constants.KEY_EMAIL, binding.inputEmail.getText().toString());
-                        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                        startActivity(intent);
-
-
-                    }
+                .addOnSuccessListener(documentReference -> {
+                    preferenceManager.putBoolean(Constants.KEY_IS_SIGNED_IN, true);
+                    preferenceManager.putString(Constants.KEY_USER_ID, documentReference.getId());
+                    preferenceManager.putString(Constants.KEY_FIRST_NAME, getInputsContentText(binding.inputFirstName));
+                    preferenceManager.putString(Constants.KEY_LAST_NAME, getInputsContentText(binding.inputLastName));
+                    preferenceManager.putString(Constants.KEY_EMAIL, getInputsContentText(binding.inputEmail));
+                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent);
                 })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        binding.signUpProgressBar.setVisibility(View.INVISIBLE);
-                        binding.buttonSignUp.setVisibility(View.VISIBLE);
-                        Toast.makeText(SignUpActivity.this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
+                .addOnFailureListener(e -> {
+                    binding.signUpProgressBar.setVisibility(View.INVISIBLE);
+                    binding.buttonSignUp.setVisibility(View.VISIBLE);
+                    Toast.makeText(SignUpActivity.this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
+    }
+
+    private String getInputsContentText(EditText editText) {
+        return editText.getText().toString().trim();
     }
 }

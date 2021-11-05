@@ -25,7 +25,7 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/bold"
                 android:includeFontPadding="false"
-                android:text="@string/welcome_to"
+                android:text="@string/activity_sign_in_text_welcome_to"
                 android:textColor="@color/colorTextIcons"
                 android:textSize="@dimen/_16ssp" />
 
@@ -35,7 +35,7 @@
                 android:layout_marginTop="@dimen/_4sdp"
                 android:fontFamily="@font/bold"
                 android:includeFontPadding="false"
-                android:text="@string/video_meeting_conferencing_app"
+                android:text="@string/activity_sign_in_text_video_meeting_conference_app"
                 android:textColor="@color/colorTextIcons"
                 android:textSize="@dimen/_16ssp" />
         </LinearLayout>
@@ -47,7 +47,7 @@
             android:layout_marginTop="@dimen/_20sdp"
             android:fontFamily="@font/regular"
             android:includeFontPadding="false"
-            android:text="@string/sign_in_to_your_account"
+            android:text="@string/activity_sign_in_text_sign_in_to_your_account"
             android:textColor="@color/colorPrimaryText"
             android:textSize="@dimen/_15ssp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -78,7 +78,7 @@
                     android:layout_marginEnd="@dimen/_8sdp"
                     android:fontFamily="@font/regular"
                     android:includeFontPadding="false"
-                    android:text="@string/email"
+                    android:text="@string/activity_sign_in_text_email"
                     android:textColor="@color/colorPrimaryText"
                     android:textSize="@dimen/_11ssp" />
 
@@ -90,7 +90,7 @@
                     android:layout_marginEnd="@dimen/_8sdp"
                     android:background="@null"
                     android:fontFamily="@font/regular"
-                    android:hint="@string/your_example_com"
+                    android:hint="@string/activity_sign_in_hint_you_example_com"
                     android:imeOptions="actionNext"
                     android:importantForAutofill="no"
                     android:includeFontPadding="false"
@@ -107,7 +107,6 @@
                     android:layout_marginEnd="@dimen/_8sdp"
                     android:fontFamily="@font/regular"
                     android:includeFontPadding="false"
-                    android:text="@string/password"
                     android:textColor="@color/colorPrimaryText"
                     android:textSize="@dimen/_11ssp" />
 
@@ -120,18 +119,17 @@
                     android:layout_marginBottom="@dimen/_8sdp"
                     android:background="@null"
                     android:fontFamily="@font/regular"
-                    android:hint="@string/password_hint"
-                    android:imeOptions="actionDone"
+                    android:hint="@string/activity_sign_in_hint_password"
+                    android:imeOptions="actionNext"
                     android:importantForAutofill="no"
                     android:includeFontPadding="false"
                     android:inputType="textPassword"
+                    android:text="123456"
                     android:textColor="@color/colorPrimaryText"
                     android:textColorHint="@color/colorHintText"
                     android:textSize="@dimen/_13ssp" />
 
-
             </LinearLayout>
-
 
         </androidx.cardview.widget.CardView>
 
@@ -144,7 +142,7 @@
             android:layout_marginEnd="@dimen/_20sdp"
             android:fontFamily="@font/bold"
             android:includeFontPadding="false"
-            android:text="@string/sign_in"
+            android:text="@string/activity_sign_in_text_sign_in"
             android:textColor="@color/colorTextIcons"
             android:textSize="@dimen/_13ssp"
             app:layout_constraintTop_toBottomOf="@id/cardSignIn" />
@@ -167,10 +165,10 @@
             android:fontFamily="@font/regular"
             android:gravity="center"
             android:includeFontPadding="false"
-            android:text="@string/don_t_have_an_account"
+            android:text="@string/activity_sign_in_text_do_not_have_an_account"
             android:textColor="@color/colorPrimaryText"
             android:textSize="@dimen/_13ssp"
-            app:layout_constraintTop_toBottomOf="@id/buttonSignIn" />
+            app:layout_constraintTop_toBottomOf="@+id/buttonSignIn" />
 
         <TextView
             android:id="@+id/textSignUp"
@@ -181,12 +179,13 @@
             android:gravity="center"
             android:includeFontPadding="false"
             android:padding="@dimen/_6sdp"
-            android:text="@string/sign_up"
+            android:text="@string/activity_sign_in_text_sign_up"
             android:textAllCaps="true"
             android:textColor="@color/colorAccent"
             android:textSize="@dimen/_14ssp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toBottomOf="@id/textNoAccount" />
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

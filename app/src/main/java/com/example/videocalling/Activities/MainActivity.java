@@ -1,12 +1,19 @@
 package com.example.videocalling.Activities;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.PowerManager;
+import android.provider.Settings;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.videocalling.Adapters.UsersAdapter;
 import com.example.videocalling.Listeners.UserListener;
@@ -24,6 +31,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.installations.FirebaseInstallations;
 import com.google.firebase.installations.InstallationTokenResult;
+import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -37,6 +46,8 @@ public class MainActivity extends AppCompatActivity implements UserListener {
     private List<User> users;
     private UsersAdapter usersAdapter;
 
+    private final int REQUEST_CODE_BATTERY_OPTIMIZATIONS = 1;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,48 +56,46 @@ public class MainActivity extends AppCompatActivity implements UserListener {
 
         preferenceManager = new PreferenceManager(getApplicationContext());
 
-        binding.textTitle.setText(String.format(
-                "%s %s",
-                preferenceManager.getString(Constants.KEY_FIRST_NAME),
-                preferenceManager.getString(Constants.KEY_LAST_NAME)
-        ));
 
-        binding.textSignOut.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                signOut();
-            }
-        });
+
+
+        binding.textTitle.setText(String.format("%s %s",
+                preferenceManager.getString(Constants.KEY_FIRST_NAME),
+                preferenceManager.getString(Constants.KEY_LAST_NAME)));
+
+        binding.textSignOut.setOnClickListener(v -> signOut());
+
+
 
         FirebaseInstallations.getInstance().getToken(false).addOnCompleteListener(new OnCompleteListener<InstallationTokenResult>() {
             @Override
             public void onComplete(@NonNull Task<InstallationTokenResult> task) {
-                if (task
-                        .isSuccessful() && task.getResult() != null) {
-                    sendFCMTokenDatabase(task.getResult().getToken());
+                if (task.isSuccessful() && task.getResult() != null) {
+                    sendFCMTokenToDatabase(task.getResult().getToken());
                 }
             }
         });
+
+
 
         users = new ArrayList<>();
         usersAdapter = new UsersAdapter(users, this);
         binding.usersRecyclerView.setAdapter(usersAdapter);
 
+
         binding.swipeRefreshLayout.setOnRefreshListener(this::getUsers);
+
         getUsers();
-
-
+        //checkForBatteryOptimizations();
     }
 
     private void getUsers() {
         binding.swipeRefreshLayout.setRefreshing(true);
-
         FirebaseFirestore database = FirebaseFirestore.getInstance();
         database.collection(Constants.KEY_COLLECTION_USERS)
                 .get()
                 .addOnCompleteListener(task -> {
                     binding.swipeRefreshLayout.setRefreshing(false);
-
                     String myUserId = preferenceManager.getString(Constants.KEY_USER_ID);
                     if (task.isSuccessful() && task.getResult() != null) {
                         users.clear();
@@ -100,71 +109,58 @@ public class MainActivity extends AppCompatActivity implements UserListener {
                             user.email = documentSnapshot.getString(Constants.KEY_EMAIL);
                             user.token = documentSnapshot.getString(Constants.KEY_FCM_TOKEN);
                             users.add(user);
-
                         }
                         if (users.size() > 0) {
                             usersAdapter.notifyDataSetChanged();
                         } else {
-                            binding.textErrorMessage.setText(String.format("%s", "No Users Available"));
+                            binding.textErrorMessage.setText(String.format("%s", "No users available"));
                             binding.textErrorMessage.setVisibility(View.VISIBLE);
                         }
                     } else {
-                        binding.textErrorMessage.setText(String.format("%s", "No Users Available"));
+                        binding.textErrorMessage.setText(String.format("%s", "No users available"));
                         binding.textErrorMessage.setVisibility(View.VISIBLE);
                     }
                 });
     }
 
-    private void sendFCMTokenDatabase(String token) {
+    private void sendFCMTokenToDatabase(String token) {
         FirebaseFirestore database = FirebaseFirestore.getInstance();
+
         DocumentReference documentReference =
-                database.collection(Constants.KEY_COLLECTION_USERS).document(
-                        preferenceManager.getString(Constants.KEY_USER_ID)
-                );
+                database.collection(Constants.KEY_COLLECTION_USERS)
+                        .document(preferenceManager.getString(Constants.KEY_USER_ID));
 
         documentReference.update(Constants.KEY_FCM_TOKEN, token)
-
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(MainActivity.this, "Unable to send token: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                });
+                .addOnFailureListener(e ->
+                        Toast.makeText(MainActivity.this, "Unable to send token: " + e.getMessage(), Toast.LENGTH_SHORT).show());
     }
 
     private void signOut() {
         Toast.makeText(this, "Signing Out...", Toast.LENGTH_SHORT).show();
+
         FirebaseFirestore database = FirebaseFirestore.getInstance();
-        DocumentReference documentReference = database.collection(Constants.KEY_COLLECTION_USERS).document(
-                preferenceManager.getString(Constants.KEY_USER_ID)
-        );
+        DocumentReference documentReference =
+                database.collection(Constants.KEY_COLLECTION_USERS)
+                        .document(preferenceManager.getString(Constants.KEY_USER_ID));
 
         HashMap<String, Object> updates = new HashMap<>();
         updates.put(Constants.KEY_FCM_TOKEN, FieldValue.delete());
         documentReference.update(updates)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        preferenceManager.clearPreferences();
-                        startActivity(new Intent(MainActivity.this, SignInActivity.class));
-                        finish();
-                    }
+                .addOnSuccessListener(aVoid -> {
+                    preferenceManager.clearPreferences();
+                    startActivity(new Intent(getApplicationContext(), SignInActivity.class));
+                    finish();
                 })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(MainActivity.this, "Unable to sign out!!", Toast.LENGTH_SHORT).show();
-
-                    }
-                });
-
-
+                .addOnFailureListener(e ->
+                        Toast.makeText(MainActivity.this, "Unable to sign out: " + e.getMessage(), Toast.LENGTH_SHORT).show());
     }
 
     @Override
     public void initiateVideoMeeting(User user) {
-        if (user.token == null || user.token.trim().isEmpty()) {
-            Toast.makeText(this, user.firstName + " " + user.lastName + "is not available for meeting.", Toast.LENGTH_SHORT).show();
+        final boolean isValidToken = user.token != null && !user.token.trim().isEmpty();
+
+        if (!isValidToken) {
+            Toast.makeText(this, user.firstName + " " + user.lastName + " is not available for meeting", Toast.LENGTH_SHORT).show();
         } else {
             Intent intent = new Intent(getApplicationContext(), OutgoingMeetingInvitation.class);
             intent.putExtra("user", user);
@@ -175,10 +171,58 @@ public class MainActivity extends AppCompatActivity implements UserListener {
 
     @Override
     public void initiateAudioMeeting(User user) {
-        if (user.token == null || user.token.trim().isEmpty()) {
-            Toast.makeText(this, user.firstName + " " + user.lastName + "is not available for meeting.", Toast.LENGTH_SHORT).show();
+        final boolean isValidToken = user.token != null && !user.token.trim().isEmpty();
+
+        if (!isValidToken) {
+            Toast.makeText(this, user.firstName + " " + user.lastName + " is not available for meeting", Toast.LENGTH_SHORT).show();
         } else {
-            Toast.makeText(this, "Audio meeting with " + user.firstName + " " + user.lastName, Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(getApplicationContext(), OutgoingMeetingInvitation.class);
+            intent.putExtra("user", user);
+            intent.putExtra("type", "audio");
+            startActivity(intent);
         }
     }
+
+    @Override
+    public void onMultipleUsersAction(Boolean isMultipleUsersSelected) {
+        if (isMultipleUsersSelected) {
+            binding.imageConference.setVisibility(View.VISIBLE);
+            binding.imageConference.setOnClickListener(v -> {
+                Intent intent = new Intent(getApplicationContext(), OutgoingMeetingInvitation.class);
+                intent.putExtra("selectedUsers", new Gson().toJson(usersAdapter.getSelectedUsers()));
+                intent.putExtra("type", "video");
+                intent.putExtra("isMultiple", true);
+                startActivity(intent);
+
+                System.out.println(usersAdapter.getSelectedUsers().toString());
+            });
+        } else {
+            binding.imageConference.setVisibility(View.GONE);
+        }
+    }
+
+//    private void checkForBatteryOptimizations() {
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+//            PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
+//            if (!powerManager.isIgnoringBatteryOptimizations(getPackageName())) {
+//                new AlertDialog.Builder(MainActivity.this)
+//                        .setTitle("Waring")
+//                        .setMessage("Battery optimization is enabled. It can interrupt running background services")
+//                        .setPositiveButton("Disable", (dialog, which) -> {
+//                            Intent intent = new Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS);
+//                            startActivityForResult(intent, REQUEST_CODE_BATTERY_OPTIMIZATIONS);
+//                        })
+//                        .setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss())
+//                        .show();
+//            }
+//        }
+//    }
+
+//    @Override
+//    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+//        super.onActivityResult(requestCode, resultCode, data);
+//        if (requestCode == REQUEST_CODE_BATTERY_OPTIMIZATIONS) {
+//            checkForBatteryOptimizations();
+//        }
+//    }
 }

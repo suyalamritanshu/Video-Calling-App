@@ -32,7 +32,7 @@
             android:layout_marginStart="@dimen/_8sdp"
             android:fontFamily="@font/bold"
             android:includeFontPadding="false"
-            android:text="@string/sign_up"
+            android:text="@string/activity_sign_up_text_sign_up"
             android:textColor="@color/colorTextIcons"
             android:textSize="@dimen/_15ssp" />
 
@@ -52,13 +52,13 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
                 android:layout_marginStart="@dimen/_20sdp"
                 android:layout_marginTop="@dimen/_20sdp"
                 android:layout_marginEnd="@dimen/_20sdp"
                 android:fontFamily="@font/regular"
+                android:gravity="center"
                 android:includeFontPadding="false"
-                android:text="@string/enter_your_details_to_create_an_account"
+                android:text="@string/activity_sign_up_text_we_need_a_few_details_to_get_your_account_ready"
                 android:textColor="@color/colorPrimaryText"
                 android:textSize="@dimen/_15ssp" />
 
@@ -82,7 +82,7 @@
                         android:layout_marginEnd="@dimen/_8sdp"
                         android:fontFamily="@font/regular"
                         android:includeFontPadding="false"
-                        android:text="@string/first_name"
+                        android:text="@string/activity_sign_up_text_first_name"
                         android:textColor="@color/colorPrimaryText"
                         android:textSize="@dimen/_11ssp" />
 
@@ -94,7 +94,7 @@
                         android:layout_marginEnd="@dimen/_8sdp"
                         android:background="@null"
                         android:fontFamily="@font/regular"
-                        android:hint="@string/jane"
+                        android:hint="@string/activity_sign_up_hint_john"
                         android:imeOptions="actionNext"
                         android:importantForAutofill="no"
                         android:includeFontPadding="false"
@@ -111,7 +111,7 @@
                         android:layout_marginEnd="@dimen/_8sdp"
                         android:fontFamily="@font/regular"
                         android:includeFontPadding="false"
-                        android:text="@string/last_name"
+                        android:text="@string/activity_sign_up_text_last_name"
                         android:textColor="@color/colorPrimaryText"
                         android:textSize="@dimen/_11ssp" />
 
@@ -121,11 +121,10 @@
                         android:layout_height="@dimen/_30sdp"
                         android:layout_marginStart="@dimen/_8sdp"
                         android:layout_marginEnd="@dimen/_8sdp"
-                        android:layout_marginBottom="@dimen/_8sdp"
                         android:background="@null"
                         android:fontFamily="@font/regular"
-                        android:hint="@string/doe"
-                        android:imeOptions="actionDone"
+                        android:hint="@string/activity_sign_up_hint_doe"
+                        android:imeOptions="actionNext"
                         android:importantForAutofill="no"
                         android:includeFontPadding="false"
                         android:inputType="text"
@@ -141,7 +140,7 @@
                         android:layout_marginEnd="@dimen/_8sdp"
                         android:fontFamily="@font/regular"
                         android:includeFontPadding="false"
-                        android:text="@string/email"
+                        android:text="@string/activity_sign_up_text_email"
                         android:textColor="@color/colorPrimaryText"
                         android:textSize="@dimen/_11ssp" />
 
@@ -153,7 +152,7 @@
                         android:layout_marginEnd="@dimen/_8sdp"
                         android:background="@null"
                         android:fontFamily="@font/regular"
-                        android:hint="@string/your_example_com"
+                        android:hint="@string/activity_sign_up_hint_you_example_com"
                         android:imeOptions="actionNext"
                         android:importantForAutofill="no"
                         android:includeFontPadding="false"
@@ -170,7 +169,7 @@
                         android:layout_marginEnd="@dimen/_8sdp"
                         android:fontFamily="@font/regular"
                         android:includeFontPadding="false"
-                        android:text="@string/password"
+                        android:text="@string/activity_sign_up_text_password"
                         android:textColor="@color/colorPrimaryText"
                         android:textSize="@dimen/_11ssp" />
 
@@ -183,8 +182,8 @@
                         android:layout_marginBottom="@dimen/_8sdp"
                         android:background="@null"
                         android:fontFamily="@font/regular"
-                        android:hint="@string/password_hint"
-                        android:imeOptions="actionNext"
+                        android:hint="@string/activity_sign_up_hint_password"
+                        android:imeOptions="actionDone"
                         android:importantForAutofill="no"
                         android:includeFontPadding="false"
                         android:inputType="textPassword"
@@ -200,12 +199,12 @@
                         android:layout_marginEnd="@dimen/_8sdp"
                         android:fontFamily="@font/regular"
                         android:includeFontPadding="false"
-                        android:text="Confirm Password"
+                        android:text="@string/activity_sign_up_text_confirm_password"
                         android:textColor="@color/colorPrimaryText"
                         android:textSize="@dimen/_11ssp" />
 
                     <EditText
-                        android:id="@+id/inputCnfPassword"
+                        android:id="@+id/inputConfirmPassword"
                         android:layout_width="match_parent"
                         android:layout_height="@dimen/_30sdp"
                         android:layout_marginStart="@dimen/_8sdp"
@@ -213,15 +212,14 @@
                         android:layout_marginBottom="@dimen/_8sdp"
                         android:background="@null"
                         android:fontFamily="@font/regular"
-                        android:hint="@string/password_hint"
-                        android:imeOptions="actionDone"
+                        android:hint="@string/activity_sign_up_hint_confirm_password"
+                        android:imeOptions="actionNext"
                         android:importantForAutofill="no"
                         android:includeFontPadding="false"
                         android:inputType="textPassword"
                         android:textColor="@color/colorPrimaryText"
                         android:textColorHint="@color/colorHintText"
                         android:textSize="@dimen/_13ssp" />
-
 
                 </LinearLayout>
 
@@ -239,33 +237,30 @@
                     android:layout_marginEnd="@dimen/_20sdp"
                     android:fontFamily="@font/bold"
                     android:includeFontPadding="false"
-                    android:text="@string/sign_up"
+                    android:text="@string/activity_sign_up_text_sign_up"
                     android:textColor="@color/colorTextIcons"
                     android:textSize="@dimen/_13ssp"
                     app:layout_constraintTop_toBottomOf="@id/cardSignIn" />
 
                 <ProgressBar
+                    android:id="@+id/signUpProgressBar"
                     android:layout_width="@dimen/_25sdp"
                     android:layout_height="@dimen/_25sdp"
-                    android:id="@+id/signUpProgressBar"
                     android:layout_gravity="center"
-                    android:visibility="invisible"/>
+                    android:visibility="invisible" />
 
             </FrameLayout>
 
-
             <TextView
-                android:id="@+id/textHaveAccount"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/_20sdp"
                 android:fontFamily="@font/regular"
                 android:gravity="center"
                 android:includeFontPadding="false"
-                android:text="@string/already_have_an_account"
+                android:text="@string/activity_sign_up_text_already_have_an_account"
                 android:textColor="@color/colorPrimaryText"
-                android:textSize="@dimen/_13ssp"
-                app:layout_constraintTop_toBottomOf="@id/buttonSignIn" />
+                android:textSize="@dimen/_13ssp" />
 
             <TextView
                 android:id="@+id/textSignIn"
@@ -276,17 +271,15 @@
                 android:gravity="center"
                 android:includeFontPadding="false"
                 android:padding="@dimen/_6sdp"
-                android:text="@string/sign_in"
+                android:text="@string/activity_sign_up_text_sign_in"
                 android:textAllCaps="true"
                 android:textColor="@color/colorAccent"
                 android:textSize="@dimen/_14ssp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/textNoAccount" />
 
-
         </LinearLayout>
 
     </ScrollView>
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>
